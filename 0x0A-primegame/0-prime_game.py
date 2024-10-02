@@ -1,61 +1,48 @@
 #!/usr/bin/python3
-""" Prime Game """
+
+"""Prime Game Interview Question."""
 
 
-def isprime(n):
-    """ Return prime number """
-    for i in range(2, n):
-        if n % i == 0:
-            return False
-    return True
+def sieve_of_eratosthenes(n):
+    """
+    Generate a list of prime numbers up to n using the Sieve
+    of Eratosthenes.
+    """
+    prime = [True] * (n + 1)
+    p = 2
+    while p * p <= n:
+        if prime[p]:
+            for i in range(p * p, n + 1, p):
+                prime[i] = False
+        p += 1
+    prime[0], prime[1] = False, False
+    return prime
 
 
-def delete_numbers(n, nums):
-    """ Remove numbers - return zero """
-    for i in range(len(nums)):
-        if nums[i] % n == 0:
-            nums[i] = 0
+def count_primes_up_to(prime):
+    """Count the number of primes up to each index."""
+    count = 0
+    prime_count = [0] * len(prime)
+    for i in range(len(prime)):
+        if prime[i]:
+            count += 1
+        prime_count[i] = count
+    return prime_count
 
 
 def isWinner(x, nums):
-    """ Return name of player that won
-    most rounds
-    """
-    nums.sort()
-    winner = False
-    Maria = 0
-    Ben = 0
-    for game in range(x):
-        # prints("game# ", game+1)
-        nums2 = list(range(1, nums[game] + 1))
-        # print("nums: ", nums2)
-        turn = 0
-        while True:
-            """
-            # monitor turns, uncomment to watch
-            if turn % 2 != 0:
-                print("Ben turn ")
-            else:
-                print("Maria turn ")
-            """
-            change = False
-            for i, n in enumerate(nums2):
-                # print("n: ", n, "i: ", i)
-                if n > 1 and isprime(n):
-                    delete_numbers(n, nums2)
-                    change = True
-                    turn += 1
-                    break
-            # print("movement: ". nums2)
-            if change is False:
-                break
-        if turn % 2 != 0:
-            Maria += 1
-        else:
-            Ben += 1
-        # print("Maria: {}, Ben: {}".format(Maria, Ben))
-    if Maria == Ben:
+    """Determine who the winner of the game is."""
+    if x == 0 or x == 1:
         return None
-    if Maria > Ben:
+
+    n = max(nums)
+    prime = sieve_of_eratosthenes(n)
+    prime_count = count_primes_up_to(prime)
+
+    player1 = sum(prime_count[num] % 2 == 1 for num in nums)
+
+    if player1 * 2 == len(nums):
+        return None
+    if player1 * 2 > len(nums):
         return "Maria"
     return "Ben"
